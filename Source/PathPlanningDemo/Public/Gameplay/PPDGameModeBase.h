@@ -21,7 +21,7 @@ public:
 	virtual void BeginPlay() override;
 	
 	TMap<FVector2D,TObjectPtr<APPDCellBase>> GetMapInfo() const;
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APPDCellBase> CellBaseClass;
@@ -43,6 +43,4 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	TMap<FVector2D,TObjectPtr<APPDCellBase>> MapInfo;
-
-	
 };
