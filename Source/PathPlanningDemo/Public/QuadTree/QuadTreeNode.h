@@ -18,7 +18,7 @@ public:
 	int32 Depth = 0;
 	int32 MaxCount = 4;
 
-	TArray<TObjectPtr<AActor>> Objects;
+	TArray<AActor*> Objects;
 	static UWorld* WorldObject;
 	bool bInRange;
 
@@ -52,14 +52,14 @@ public:
 		ChildrenNode.Init(nullptr,4);
 		bInRange = false;
 
-		if (!Root.IsValid())
-		{
-			GlobalRoot = this->AsShared();
-		}
-		else
-		{
-			GlobalRoot = Root -> GlobalRoot;
-		}
+		// if (!Root.IsValid())
+		// {
+		// 	GlobalRoot = this->AsShared();
+		// }
+		// else
+		// {
+		// 	GlobalRoot = Root -> GlobalRoot;
+		// }
 	}
 	
 	~QuadTreeNode(){
@@ -107,7 +107,7 @@ public:
 	}
 	
 	//插入对象
-	void InsertObject(TObjectPtr<AActor> InObject)
+	void InsertObject(AActor* InObject)
 	{
 	Objects.Add(InObject);
 
@@ -118,7 +118,7 @@ public:
 
 	//超过上限个数，则创建子节点，或者不再是叶子节点
 	bIsLeaf = true;
-	for (auto& Obj : Objects)
+	for (auto Obj : Objects)
 	{
 		for (int32 i = 0; i < 4; i++)
 		{
@@ -140,7 +140,10 @@ public:
 						Root = this->AsShared();
 						ChildrenNode[i] = MakeShared<QuadTreeNode>(ChildCenter,ChildExtend,Depth+1,Root);
 					}
-					ChildrenNode[i]->InsertObject(Obj);
+					if (ChildrenNode[i].IsValid() && Obj!=nullptr)
+					{
+						ChildrenNode[i]->InsertObject(Obj);
+					}
 				}
 			}
 		}
@@ -162,6 +165,7 @@ public:
 	//判断电池是否在扫描器的范围内
 	void TraceObjectInRange(AActor* TraceActor,float Radius)
 	{
+		if (TraceActor==nullptr || Radius<=0) return;
 		FVector ObjectCenter = TraceActor->GetActorLocation();
 		if (InterSection(ObjectCenter,Radius))
 		{

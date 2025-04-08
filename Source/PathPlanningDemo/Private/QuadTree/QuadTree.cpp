@@ -15,9 +15,9 @@ void AQuadTree::BeginPlay()
 {
 	Super::BeginPlay();
 	QuadTreeNode::WorldObject = GetWorld();
-	Root = MakeShareable(new QuadTreeNode(FVector::ZeroVector,FVector(Height,Width,0),0));
+	Root = MakeShared<QuadTreeNode>(FVector::ZeroVector,FVector(Height,Width,0),0);
 	GetWorld()->GetTimerManager().SetTimer(Timer_Spawn,this,&AQuadTree::SpawnActors,PlayRate,true);
-	GetWorld()->GetTimerManager().SetTimer(Timer_Spawn,this,&AQuadTree::ActorsAddVelocity,2,true);
+	GetWorld()->GetTimerManager().SetTimer(Timer_AddVelocity,this,&AQuadTree::ActorsAddVelocity,2,true);
 }
 
 // Called every frame
@@ -45,6 +45,8 @@ void AQuadTree::SpawnActors()
 		11);
 
 	FTransform Trans = FTransform(FRotator(0, UKismetMathLibrary::RandomFloatInRange(0, 360), 0), Pos, FVector(0.2));
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	AActor* Battery = GetWorld()->SpawnActor<AActor>(BatteryClass, Trans);
 	if (IsValid(Battery))
 	{
